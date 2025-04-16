@@ -47,6 +47,22 @@ async function predict() {
         const prob = prediction[i].probability;
         const label = prediction[i].className + ": " + (prob * 100).toFixed(1) + "%";
         labelContainer.childNodes[i].querySelector(".label-text").innerText = label;
-        document.getElementById("progress-" + i).style.width = Math.round(prob * 100) + "%";
+        
+        const bar = document.getElementById("progress-" + i);
+        bar.style.width = Math.round(prob * 100) + "%";
+
+        if (prob > 0.98) {
+            // Send a POST request to the server
+            const className = prediction[i].className.toLowerCase().replace(" ", "");
+            //alert("Detected: " + className);
+            const url = className === "class1" ? "http://localhost:1880/clase1"
+                       : className === "class2" ? "http://localhost:1880/clase2"
+                       : null;
+
+            if (url) {
+                fetch(url, { method: "POST" }).catch(err => console.error("Fetch error:", err));
+            }
+        }
+    
     }
 }
